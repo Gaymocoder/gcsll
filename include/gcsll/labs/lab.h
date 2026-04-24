@@ -1,6 +1,20 @@
 #ifndef __NUMMETS_LAB_H__
 #define __NUMMETS_LAB_H__
 
+#define DECLARE_LAB(clName, ...) \
+    class clName : public gcsll::labs::lab <clName> \
+    { \
+        friend class gcsll::labs::lab <clName>; \
+        protected: \
+            clName(std::string_view name) : gcsll::labs::lab <clName> (name) {} \
+        public: \
+            void execute() const override; \
+        __VA_ARGS__ \
+    };
+    
+#define REG_LAB(class, name) \
+    static bool _reg = class::create(name);
+
 #include "gcsll/labs/lab_base.h"
 
 #include <print>
@@ -39,5 +53,7 @@ namespace gcsll::labs
             void printout() const override;
     };
 }
+
+#include "gcsll/labs/lab.tpp"
 
 #endif
