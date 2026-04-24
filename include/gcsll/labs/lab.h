@@ -1,6 +1,8 @@
 #ifndef __NUMMETS_LAB_H__
 #define __NUMMETS_LAB_H__
 
+#include "gcsll/labs/lab_base.h"
+
 #include <print>
 #include <vector>
 #include <string>
@@ -10,6 +12,9 @@ namespace gcsll::labs
     template <typename labn>
     class lab : public lab_base
     {
+        template <typename T>
+        friend class lab;
+
         private:
             size_t _index;
             const std::string _name;
