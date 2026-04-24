@@ -29,27 +29,27 @@ void launcher::init(std::string_view title)
             return;
        
         launcher::execute(selected);
-        gcsll::utils::press_enter();
+        utils::press_enter();
     }
 }
 
 void launcher::execute(size_t index)
 {
-    if (index > labs::count())
+    if (index > labs::lab <labs::lab_base> ::count())
     {
         std::println("No lab with that index is provided. Choose from the ones are above");
         return;
     }
     
-    auto& selected_lab = labs::get(index-1);
-    gcsll::utils::clear_output();
+    auto& selected_lab = labs::lab <labs::lab_base> ::get(index-1);
+    utils::clear_output();
     selected_lab.printout();
     selected_lab.execute();
 }
 
 void launcher::printout()
 {
-    const size_t labs_count = labs::count();
+    const size_t labs_count = labs::lab <labs::lab_base> ::count();
     const std::string tildas = std::format("{:~>{}}", "", launcher::title.size() + 4);
 
     std::print(
@@ -61,7 +61,7 @@ void launcher::printout()
     );
 
     for(size_t i = 0, len = labs_count; i < len; ++i)
-        std::print("{}. {}\n", 1 << i, labs::get(i).name());
+        std::print("{}. {}\n", 1 << i, labs::lab <labs::lab_base> ::get(i).name());
     std::print("\nSelected lab number: ");
 }
 
