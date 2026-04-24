@@ -2,6 +2,6 @@
 
 int main()
 {
-    gcsll::init("GCSLL SAMPLE");
+    gcsll::init("Programming languages");   // the discipline name f.e.
     return 0;
 }
