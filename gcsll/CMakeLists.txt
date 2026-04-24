@@ -3,10 +3,10 @@ project(gcsll_src)
 
 add_subdirectory(utils)
 
-add_library(_gcsll INTERFACE)
+add_library(gcsll INTERFACE)
 target_link_libraries(
-    _gcsll INTERFACE
+    gcsll INTERFACE
     gcsll::utils
     gcsll::include_dir
 )
-add_library(gcsll::gcsll ALIAS _gcsll)
+add_library(gcsll::gcsll ALIAS gcsll)
