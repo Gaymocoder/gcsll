@@ -18,5 +18,8 @@ block()
     add_library(gcsll::include_dir ALIAS gcsll_include_dir)
     
     add_subdirectory(gcsll)
+    if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+        add_subdirectory(example)
+    endif()
 
 endblock()
