@@ -2,6 +2,6 @@
 
 int main()
 {
-    gcsll::utils::launcher::init("GCSLL SAMPLE");
+    gcsll::init("GCSLL SAMPLE");
     return 0;
 }

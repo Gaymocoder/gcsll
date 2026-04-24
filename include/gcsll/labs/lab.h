@@ -52,6 +52,9 @@ namespace gcsll::labs
 
             void printout() const override;
     };
+
+    inline constexpr auto get = &lab <lab_base> ::get;
+    inline constexpr auto count = &lab <lab_base> ::count;
 }
 
 #include "gcsll/labs/lab.tpp"

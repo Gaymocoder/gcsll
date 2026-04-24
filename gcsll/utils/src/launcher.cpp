@@ -35,13 +35,13 @@ void launcher::init(std::string_view title)
 
 void launcher::execute(size_t index)
 {
-    if (index > labs::lab <labs::lab_base> ::count())
+    if (index > labs::count())
     {
         std::println("No lab with that index is provided. Choose from the ones are above");
         return;
     }
     
-    auto& selected_lab = labs::lab <labs::lab_base> ::get(index-1);
+    auto& selected_lab = labs::get(index-1);
     utils::clear_output();
     selected_lab.printout();
     selected_lab.execute();
@@ -49,7 +49,7 @@ void launcher::execute(size_t index)
 
 void launcher::printout()
 {
-    const size_t labs_count = labs::lab <labs::lab_base> ::count();
+    const size_t labs_count = labs::count();
     const std::string tildas = std::format("{:~>{}}", "", launcher::title.size() + 4);
 
     std::print(
@@ -61,7 +61,7 @@ void launcher::printout()
     );
 
     for(size_t i = 0, len = labs_count; i < len; ++i)
-        std::print("{}. {}\n", 1 << i, labs::lab <labs::lab_base> ::get(i).name());
+        std::print("{}. {}\n", 1 << i, labs::get(i).name());
     std::print("\nSelected lab number: ");
 }
 
