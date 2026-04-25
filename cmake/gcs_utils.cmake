@@ -26,9 +26,10 @@ function(gcs_export_prepare target_name)
     if (MINGW)
         target_link_libraries("${target_name}" INTERFACE stdc++exp)
     endif()
-    
+
     message("gcs_utils: Exported (with prefix = '${PREFIX}', module = '${MODULE}')")
 endfunction()
+
 
 function(gcs_object_prepare target_name)
     target_include_directories("${target_name}" PUBLIC "${GCS_INCLUDE_DIRS}")

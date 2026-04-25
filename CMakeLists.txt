@@ -20,4 +20,5 @@ block()
         add_subdirectory(example)
     endif()
 
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/gcsll_install.cmake)
 endblock()
