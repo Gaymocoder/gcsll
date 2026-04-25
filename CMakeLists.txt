@@ -9,15 +9,13 @@ block()
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/gcs_utils.cmake)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/gcsll_utils.cmake)
 
-    if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-        set(CMAKE_CXX_STANDARD 23)
-        set(CMAKE_CXX_STANDARD_REQUIRED ON)
-        add_compile_options(-Wall -Wextra -pedantic -O0 -g)
-    endif()
+    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
     
     add_subdirectory(gcsll)
     if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         add_subdirectory(example)
     endif()
 
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/gcsll_install.cmake)
 endblock()

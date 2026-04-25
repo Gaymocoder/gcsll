@@ -109,7 +109,7 @@ if (NOT gcsll_FOUND)
     FetchContent_Declare(
         gcsll
         GIT_REPOSITORY https://github.com/Gaymocoder/gcsll.git
-        GIT_TAG v1.0.0
+        GIT_TAG v1.0.2
     )
     FetchContent_MakeAvailable(gcsll)
 endif()

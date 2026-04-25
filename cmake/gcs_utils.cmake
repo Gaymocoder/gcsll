@@ -22,18 +22,21 @@ function(gcs_export_prepare target_name)
         $<INSTALL_INTERFACE:include>
     )
     set_target_properties("${target_name}" PROPERTIES EXPORT_NAME "${MODULE}")
+    target_compile_options("${target_name}" PRIVATE -Wall -Wextra -pedantic -O0 -g)
     target_compile_features("${target_name}" INTERFACE cxx_std_23)
     if (MINGW)
         target_link_libraries("${target_name}" INTERFACE stdc++exp)
     endif()
-    
+
     message("gcs_utils: Exported (with prefix = '${PREFIX}', module = '${MODULE}')")
 endfunction()
 
+
 function(gcs_object_prepare target_name)
     target_include_directories("${target_name}" PUBLIC "${GCS_INCLUDE_DIRS}")
-
+    
     target_compile_features("${target_name}" INTERFACE cxx_std_23)
+    target_compile_options("${target_name}" PRIVATE -Wall -Wextra -pedantic -O0 -g)
     if (MINGW)
         target_link_libraries("${target_name}" INTERFACE stdc++exp)
     endif()
