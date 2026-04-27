@@ -23,9 +23,11 @@ function(gcs_export_prepare target_name)
     )
     set_target_properties("${target_name}" PROPERTIES EXPORT_NAME "${MODULE}")
     target_compile_options("${target_name}" PRIVATE -Wall -Wextra -pedantic -O0 -g)
-    target_compile_features("${target_name}" INTERFACE cxx_std_23)
+
     if (MINGW)
-        target_link_libraries("${target_name}" INTERFACE stdc++exp)
+        target_link_libraries("${target_name}" INTERFACE
+            $<$<COMPILE_FEATURES:cxx_std_23> : stdc++exp>
+        )
     endif()
 
     message("gcs_utils: Exported (with prefix = '${PREFIX}', module = '${MODULE}')")
