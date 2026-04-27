@@ -1,13 +1,17 @@
 // lab.h
+#ifndef __NUMMETS_LAB1_H__
+#define __NUMMETS_LAB1_H__
 
-#ifndef __GCSLL_SAMPLE_LAB_H__
-#define __GCSLL_SAMPLE_LAB_H__
+#include <print>
 
-#include <gcsll/gcsll.h>
+void dihotomia()
+{
+    std::println("Dihotomia method");
+}
 
-DECLARE_LAB(lab,
-    void task1(int x) const;     // declaring lab tasks
-    void task2(const std::string& str) const;
-);
+void hello_world()
+{
+    std::println("HELLO, world!");
+}
 
 #endif
