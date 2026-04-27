@@ -3,6 +3,7 @@
 
 #include "gcsll/labs/lab_base.h"
 
+#include <map>
 #include <print>
 #include <vector>
 #include <string>
@@ -10,26 +11,20 @@
 
 namespace gcsll::labs
 {
-    struct task
-    {
-        const std::string name;
-        std::function <void()> execute;
-    };
-
     class lab : public lab_base
     {
         private:
             size_t _index;
             const std::string _name;
 
-            static void reg_lab(lab_ptr lab) {lab::labs.push_back(rlab);}
+            static void reg_lab(lab_ptr rlab) {lab::labs.push_back(rlab);}
 
         protected:
             lab(std::string_view name)
                 : _index(lab::count()), _name(name) {}
 
-            std::vector <task> tasks;
             static std::vector <lab_ptr> labs;
+            std::map <std::string, std::function <void()>> tasks;
 
         public:
             template <typename... Args>

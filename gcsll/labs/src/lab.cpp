@@ -26,19 +26,16 @@ void lab::printout() const
 
 void lab::execute() const 
 {
-    for(auto& task : this->tasks)
+    for(const auto& [name, func] : this->tasks)
     {
-        std::println("\n[{}]", task.name);
-        task.execute();
+        std::println("\n[{}]", name);
+        func();
     }
 }
 
 bool lab::add_task(std::string_view name, std::function <void()> task_func)
 {
-    this->tasks.push_back(task {
-        std::string(name),
-        task_func
-    });
+    this->tasks[std::string(name)] = task_func;
     return true;
 }
 
