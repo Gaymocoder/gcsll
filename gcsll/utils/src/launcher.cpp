@@ -29,7 +29,6 @@ void launcher::init(std::string_view title)
             return;
        
         launcher::execute(selected);
-        utils::press_enter();
     }
 }
 
@@ -38,13 +37,18 @@ void launcher::execute(size_t index)
     if (index > labs::count())
     {
         std::println("No lab with that index is provided. Choose from the ones are above");
+        utils::press_enter();
         return;
     }
     
     auto& selected_lab = labs::get(index-1);
-    utils::clear_output();
-    selected_lab.printout();
-    selected_lab.execute();
+    while (true)
+    {
+        utils::clear_output();
+        selected_lab.printout();
+        if (!selected_lab.execute()) break;
+        utils::press_enter();
+    }
 }
 
 void launcher::printout()

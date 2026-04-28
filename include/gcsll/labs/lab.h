@@ -3,14 +3,15 @@
 
 #include "gcsll/labs/lab_base.h"
 
-#include <map>
 #include <print>
 #include <vector>
 #include <string>
+#include <iostream>
 #include <functional>
 
 namespace gcsll::labs
 {
+    typedef std::pair <std::string, std::function <void()>> task;
     class lab : public lab_base
     {
         private:
@@ -24,7 +25,7 @@ namespace gcsll::labs
                 : _index(lab::count()), _name(name) {}
 
             static std::vector <lab_ptr> labs;
-            std::map <std::string, std::function <void()>> tasks;
+            std::vector <gcsll::labs::task> tasks;
 
         public:
             template <typename... Args>
@@ -37,7 +38,7 @@ namespace gcsll::labs
             const std::string& name() const override {return this->_name;}
             bool add_task(std::string_view name, std::function <void()> task_func) override;
             
-            void execute() const override;
+            int execute() const override;
             void printout() const override;
     };
 

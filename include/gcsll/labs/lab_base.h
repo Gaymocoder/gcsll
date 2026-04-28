@@ -17,7 +17,7 @@ namespace gcsll::labs
 
             virtual void printout() const = 0;
             
-            virtual void execute() const = 0;
+            virtual int execute() const = 0;
             virtual ~lab_base() = default;            
     };
 

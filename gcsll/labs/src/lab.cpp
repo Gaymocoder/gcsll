@@ -1,12 +1,15 @@
 #ifndef __NUMMETS_LAB_TPP__
 #define __NUMMETS_LAB_TPP__
 
+#include "gcsll/utils.h"
 #include "gcsll/labs/lab.h"
 
 #include <print>
 #include <format>
 #include <memory>
 #include <string>
+
+#include <ranges>
 
 namespace gcsll::labs
 {
@@ -24,18 +27,34 @@ void lab::printout() const
     );
 }
 
-void lab::execute() const 
+int lab::execute() const 
 {
-    for(const auto& [name, func] : this->tasks)
+    for(const auto& [i, pair] : std::views::enumerate(this->tasks))
+        std::println("{}. {}", i+1, pair.first);
+    std::print("{}. Launch all\n\nSelected task (enter 0 to return to lab list): ", this->tasks.size()+1);
+
+    size_t selected_task = 0;
+    std::cin >> selected_task;
+    if (!selected_task)
+        return 0;
+
+    gcsll::utils::clear_output();
+    this->printout();
+
+    if (selected_task != tasks.size() + 1)
     {
-        std::println("\n[{}]", name);
-        func();
+        this->tasks[selected_task-1].second();
+        return 1;
     }
+    
+    for(const auto& [name, func] : this->tasks)
+        func();
+    return 1;
 }
 
 bool lab::add_task(std::string_view name, std::function <void()> task_func)
 {
-    this->tasks[std::string(name)] = task_func;
+    this->tasks.push_back({std::string(name), task_func});
     return true;
 }
 
