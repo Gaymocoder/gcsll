@@ -1,8 +1,8 @@
 function(gcs_export_prepare target_name)
-    message("gcs_utils: Exporting ${target_name}")
+    message("-- gcs_utils: Exporting ${target_name}")
 
     foreach(obj IN LISTS ARGN)
-        message("Adding source-object '${obj}' to target '${target_name}'")
+        message("-- -- Adding source-object '${obj}' to target '${target_name}'")
         target_sources(${target_name} PRIVATE $<TARGET_OBJECTS:${obj}>)
     endforeach()
 
@@ -30,7 +30,7 @@ function(gcs_export_prepare target_name)
         )
     endif()
 
-    message("gcs_utils: Exported (with prefix = '${PREFIX}', module = '${MODULE}')")
+    message("-- gcs_utils: Exported as ${PREFIX}::${MODULE}")
 endfunction()
 
 
