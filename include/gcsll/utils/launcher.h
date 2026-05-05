@@ -1,5 +1,5 @@
-#ifndef __NUMMETS_UTILS_LAUNCHER_H__
-#define __NUMMETS_UTILS_LAUNCHER_H__
+#ifndef __GCSLL_UTILS_LAUNCHER_H__
+#define __GCSLL_UTILS_LAUNCHER_H__
 
 #include "gcsll/labs/lab_base.h"
 

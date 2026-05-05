@@ -26,7 +26,7 @@ function(gcs_export_prepare target_name)
 
     if (MINGW)
         target_link_libraries("${target_name}" INTERFACE
-            $<$<COMPILE_FEATURES:cxx_std_23> : stdc++exp>
+            $<$<COMPILE_FEATURES:cxx_std_23>:stdc++exp>
         )
     endif()
 
