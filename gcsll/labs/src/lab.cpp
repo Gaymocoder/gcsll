@@ -9,8 +9,6 @@
 #include <memory>
 #include <string>
 
-#include <ranges>
-
 namespace gcsll::labs
 {
 
@@ -29,8 +27,8 @@ void lab::printout() const
 
 int lab::execute() const 
 {
-    for(const auto& [i, pair] : std::views::enumerate(this->tasks))
-        std::println("{}. {}", i+1, pair.first);
+    for(size_t i = 0; const auto& [name, _] : this->tasks)
+        std::println("{}. {}", ++i, name);
     std::print("{}. Launch all\n\nSelected task (enter 0 to return to lab list): ", this->tasks.size()+1);
 
     size_t selected_task = 0;
