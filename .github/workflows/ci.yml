@@ -1,0 +1,18 @@
+name: CI
+on:
+  push:
+    branches: [master, stable]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GCC 14
+        run: sudo apt-get update && sudo apt-get install -y g++-14
+      - name: Configure
+        run: cmake -B build -S . -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
+      - name: Build
+        run: cmake --build build -j"$(nproc)"
