@@ -8,4 +8,4 @@ add_subdirectory(labs)
 list(APPEND gcsll_objs ${gcsll_labs_objs})
 
 add_library(gcsll STATIC)
-gcs_export_prepare(gcsll ${gcsll_objs})
+gcst_export_prepare(gcsll ${gcsll_objs})
