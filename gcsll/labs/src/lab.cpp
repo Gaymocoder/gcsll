@@ -14,22 +14,23 @@ namespace gcsll::labs
 
 std::vector <lab_ptr> lab::labs;
 
-void lab::printout() const
+void lab::printout(int task_num) const
 {
-    const std::string tildas = std::format("{:~>{}}", "", this->_name.size() + 12);
+    const std::string task_name = (task_num == -1) ? "" : std::format(" {} |", this->tasks[task_num].first);
+    const std::string tildas = std::format("{:~>{}}", "", this->_name.size() + task_name.size() + 12);
     std::print(
         "{0}\n{1:^{2}}\n{0}\n",
         tildas,
-        std::format("| LAB #{}. {} |", (uint16_t) this->index() + 1, this->_name),
+        std::format("| LAB #{}. {} |{}", (uint16_t) this->index() + 1, this->_name, task_name),
         tildas.length() - 1
     );
 }
 
-int lab::execute() const 
+int lab::execute() const
 {
     for(size_t i = 0; const auto& [name, _] : this->tasks)
         std::println("{}. {}", ++i, name);
-    std::print("{}. Launch all\n\nSelected task (enter 0 to return to lab list): ", this->tasks.size()+1);
+    std::print("{}. Launch all\n\nSelected task (enter 0 to return to lab list): ", this->tasks.size() + 1);
 
     size_t selected_task = 0;
     std::cin >> selected_task;
@@ -37,7 +38,7 @@ int lab::execute() const
         return 0;
 
     gcsll::utils::clear_output();
-    this->printout();
+    this->printout(selected_task - 1);
 
     if (selected_task != tasks.size() + 1)
     {

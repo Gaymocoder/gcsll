@@ -39,7 +39,7 @@ namespace gcsll::labs
             bool add_task(std::string_view name, std::function <void()> task_func) override;
             
             int execute() const override;
-            void printout() const override;
+            void printout(int task_num = -1) const override;
     };
 
     inline constexpr auto get = &lab::get;
