@@ -11,6 +11,9 @@
 
 namespace gcsll::utils
 {
+    inline const char* ECMA_ED = "\033[2J";
+    inline const char* ECMA_CUP = "\033[H";
+
     void clear_output();
     void press_enter();
 }

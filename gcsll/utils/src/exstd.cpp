@@ -9,10 +9,7 @@ namespace gcsll::utils
 
 void clear_output()
 {
-	if (WIN)
-		system("cls");
-	else
-		system("clear");
+	std::print("{}{}", ECMA_ED, ECMA_CUP);
 }
 
 void press_enter()
