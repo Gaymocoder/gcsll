@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <optional>
 #include <functional>
 
 namespace gcsll::labs
@@ -15,7 +16,7 @@ namespace gcsll::labs
             virtual const std::string& name() const = 0;
             virtual bool add_task(std::string_view name, std::function <void()> task_func) = 0;
 
-            virtual void printout(int task_num = -1) const = 0;
+            virtual void printout(std::optional <size_t> task_num = std::nullopt) const = 0;
             
             virtual int execute() const = 0;
             virtual ~lab_base() = default;            

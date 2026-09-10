@@ -8,15 +8,16 @@
 #include <format>
 #include <memory>
 #include <string>
+#include <optional>
 
 namespace gcsll::labs
 {
 
 std::vector <lab_ptr> lab::labs;
 
-void lab::printout(int task_num) const
+void lab::printout(std::optional <size_t> task_num) const
 {
-    const std::string task_name = (task_num == -1) ? "" : std::format(" {} |", this->tasks[task_num].first);
+    const std::string task_name = (!task_num) ? "" : std::format(" {} |", this->tasks[*task_num].first);
     const std::string tildas = std::format("{:~>{}}", "", this->_name.size() + task_name.size() + 12);
     std::print(
         "{0}\n{1:^{2}}\n{0}\n",
