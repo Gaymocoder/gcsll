@@ -22,7 +22,7 @@ void lab::printout(std::optional <size_t> task_num) const
     std::print(
         "{0}\n{1:^{2}}\n{0}\n",
         tildas,
-        std::format("| LAB #{}. {} |{}", (uint16_t) this->index() + 1, this->_name, task_name),
+        std::format("| LAB #{}. {} |{}", this->index() + 1, this->_name, task_name),
         tildas.length() - 1
     );
 }

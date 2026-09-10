@@ -14,9 +14,9 @@ namespace gcsll::utils
 namespace labs = gcsll::labs;
 std::string launcher::title = "";
 
-void launcher::init(std::string_view title)
+void launcher::init(std::string_view n_title)
 {
-    launcher::title = std::string(title);
+    launcher::title = std::string(n_title);
     while (true)
     {
         utils::clear_output();
