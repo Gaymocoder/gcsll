@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     env:
+      GH_TOKEN: ${{ github.token }}
       GCST_WERROR: ON
       PYTHONPATH: ${{ github.workspace }}/.gcst
     strategy:
@@ -21,15 +22,18 @@ jobs:
         - preset: unix-clang-libstdc++
           os: ubuntu-latest
           build: sh build.sh
+        - preset: unix-gcc-libstdc++
+          os: ubuntu-latest
+          build: sh build.sh
+        - preset: win64-clang-libc++
+          os: windows-latest
+          build: ./build.bat
         - preset: win64-clang-libstdc++
           os: windows-latest
           build: ./build.bat
         - preset: win64-clang-msvc
           os: windows-latest
           build: ./build.bat
-        - preset: unix-gcc-libstdc++
-          os: ubuntu-latest
-          build: sh build.sh
         - preset: win64-gcc-libstdc++
           os: windows-latest
           build: ./build.bat
@@ -46,69 +50,139 @@ jobs:
     - run: conan profile detect --force
     - run: python .gcst/scripts/configure.py
     - run: git diff --exit-code .github/workflows/ci.yml
+    - name: Restore Conan cache
+      id: conan-cache
+      uses: actions/cache/restore@v4
+      with:
+        path: conan-cache.tgz
+        key: conan2-${{ matrix.preset }}-${{ hashFiles('conanfile.py', 
+          format('conan/profiles/{0}', matrix.preset), 'recipes/**') }}
+        restore-keys: conan2-${{ matrix.preset }}
+    - name: Unpack Conan cache
+      if: steps.conan-cache.outputs.cache-matched-key != ''
+      run: conan cache restore conan-cache.tgz
     - if: ${{ matrix.preset == 'unix-clang-libc++' }}
       run: |+
         wget https://apt.llvm.org/llvm.sh
         chmod +x llvm.sh
-        sudo ./llvm.sh 22
+        sudo ./llvm.sh 19 all
         sudo apt update
-        sudo apt install -y libc++-22-dev libc++abi-22-dev
+        sudo apt install -y libc++-19-dev libc++abi-19-dev
 
-        sudo update-alternatives --install /usr/bin/clang   clang   /usr/bin/clang-22   1000
-        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-22 1000
-        sudo update-alternatives --set clang   /usr/bin/clang-22
-        sudo update-alternatives --set clang++ /usr/bin/clang++-22
+        sudo update-alternatives --install /usr/bin/clang   clang   /usr/bin/clang-19   1000
+        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 1000
+        sudo update-alternatives --set clang   /usr/bin/clang-19
+        sudo update-alternatives --set clang++ /usr/bin/clang++-19
         clang --version
 
     - if: ${{ matrix.preset == 'unix-clang-libstdc++' }}
       run: |+
         wget https://apt.llvm.org/llvm.sh
         chmod +x llvm.sh
-        sudo ./llvm.sh 22
+        sudo ./llvm.sh 19 all
         sudo apt update
-        sudo apt install -y libc++-22-dev libc++abi-22-dev
+        sudo apt install -y libc++-19-dev libc++abi-19-dev
 
-        sudo update-alternatives --install /usr/bin/clang   clang   /usr/bin/clang-22   1000
-        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-22 1000
-        sudo update-alternatives --set clang   /usr/bin/clang-22
-        sudo update-alternatives --set clang++ /usr/bin/clang++-22
+        sudo update-alternatives --install /usr/bin/clang   clang   /usr/bin/clang-19   1000
+        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 1000
+        sudo update-alternatives --set clang   /usr/bin/clang-19
+        sudo update-alternatives --set clang++ /usr/bin/clang++-19
         clang --version
 
+        sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
         sudo apt update
-        sudo apt install -y g++-14
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+        sudo apt install -y g++-16
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-16 100
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-16 100
 
-    - uses: KyleMayes/install-llvm-action@v2
-      with:
-        version: '20'
-      if: ${{ matrix.preset == 'win64-clang-libstdc++' }}
+    - if: ${{ matrix.preset == 'unix-gcc-libstdc++' }}
+      run: |+
+        sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+        sudo apt update
+        sudo apt install -y g++-16
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-16 100
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-16 100
+
+    - shell: pwsh
+      if: ${{ matrix.preset == 'win64-clang-libc++' }}
+      run: |+
+        $PSNativeCommandUseErrorActionPreference = $true
+
+        if ("19.1.7" -eq "latest") {
+            $tag = gh release view -R mstorsjo/llvm-mingw --json tagName --jq .tagName
+        } else {
+            $re = "with LLVM $([regex]::Escape("19.1.7"))( final)?$"
+            $tag = (
+                gh release list -R mstorsjo/llvm-mingw -L 1000 --json tagName,name |
+                ConvertFrom-Json |
+                Where-Object { $_.name -match $re } |
+                Select-Object -First 1
+            ).tagName
+        }
+
+        if (-not $tag) {
+            throw "No llvm-mingw release with LLVM 19.1.7"
+        }
+
+        Invoke-WebRequest "https://github.com/mstorsjo/llvm-mingw/releases/download/$tag/llvm-mingw-$tag-ucrt-x86_64.zip" -OutFile llvm-mingw.zip
+        tar -xf llvm-mingw.zip -C C:\
+        "C:\llvm-mingw-$tag-ucrt-x86_64\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+
     - shell: pwsh
       if: ${{ matrix.preset == 'win64-clang-libstdc++' }}
       run: |+
-        choco install mingw --version=14.2.0 -y
+        $PSNativeCommandUseErrorActionPreference = $true
+
+        if ("19.1.7" -eq "latest") {
+            $tag = gh release view -R llvm/llvm-project --json tagName --jq .tagName
+        } else {
+            $tag = "llvmorg-19.1.7"
+        }
+        $ver  = $tag -replace '^llvmorg-', ''
+        $name = "clang+llvm-$ver-x86_64-pc-windows-msvc"
+
+        Invoke-WebRequest "https://github.com/llvm/llvm-project/releases/download/$tag/$name.tar.xz" -OutFile llvm.tar.xz
+        cmd /c "7z x llvm.tar.xz -so | 7z x -si -ttar -oC:\ -y"
+        Move-Item "C:\$name" C:\LLVM
+        "C:\LLVM\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+
+        $PSNativeCommandUseErrorActionPreference = $true
+
+        choco install mingw --version=16.1.0 -y
         echo "C:\ProgramData\mingw64\mingw64\bin" >> $env:GITHUB_PATH
 
     - uses: ilammy/msvc-dev-cmd@v1
-      if: ${{ matrix.preset == 'win64-clang-msvc' }}
-    - uses: KyleMayes/install-llvm-action@v2
       with:
-        version: '20'
+        toolset: '14.44'
       if: ${{ matrix.preset == 'win64-clang-msvc' }}
-    - if: ${{ matrix.preset == 'unix-gcc-libstdc++' }}
+    - if: ${{ matrix.preset == 'win64-clang-msvc' }}
       run: |+
-        sudo apt update
-        sudo apt install -y g++-14
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+        $PSNativeCommandUseErrorActionPreference = $true
+
+        if ("19.1.7" -eq "latest") {
+            $tag = gh release view -R llvm/llvm-project --json tagName --jq .tagName
+        } else {
+            $tag = "llvmorg-19.1.7"
+        }
+        $ver  = $tag -replace '^llvmorg-', ''
+        $name = "clang+llvm-$ver-x86_64-pc-windows-msvc"
+
+        Invoke-WebRequest "https://github.com/llvm/llvm-project/releases/download/$tag/$name.tar.xz" -OutFile llvm.tar.xz
+        cmd /c "7z x llvm.tar.xz -so | 7z x -si -ttar -oC:\ -y"
+        Move-Item "C:\$name" C:\LLVM
+        "C:\LLVM\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
 
     - shell: pwsh
       if: ${{ matrix.preset == 'win64-gcc-libstdc++' }}
       run: |+
-        choco install mingw --version=14.2.0 -y
+        $PSNativeCommandUseErrorActionPreference = $true
+
+        choco install mingw --version=16.1.0 -y
         echo "C:\ProgramData\mingw64\mingw64\bin" >> $env:GITHUB_PATH
 
     - uses: ilammy/msvc-dev-cmd@v1
+      with:
+        toolset: '14.44'
       if: ${{ matrix.preset == 'win64-msvc-msvcstl' }}
     - name: Build
       run: ${{ matrix.build }} --preset ${{ matrix.preset }}
@@ -122,9 +196,22 @@ jobs:
       with:
         name: ci-result-${{ matrix.preset }}
         path: r-${{ matrix.preset }}.txt
+    - name: Pack Conan cache
+      if: "!cancelled() && steps.conan-cache.outputs.cache-hit != 'true' && hashFiles('build/conan_toolchain.cmake')
+        != ''"
+      run: conan list --graph=build/graph.json --format=json 
+        --out-file=pkglist.json && conan cache save --list=pkglist.json 
+        --file=conan-cache.tgz
+    - name: Save Conan cache
+      if: "!cancelled() && steps.conan-cache.outputs.cache-hit != 'true' && hashFiles('build/conan_toolchain.cmake')
+        != ''"
+      uses: actions/cache/save@v4
+      with:
+        path: conan-cache.tgz
+        key: ${{ steps.conan-cache.outputs.cache-primary-key }}
   notes:
     needs: build
-    if: always()
+    if: always() && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: write

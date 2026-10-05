@@ -1,5 +1,8 @@
 include("${CMAKE_CURRENT_LIST_DIR}/warnings.cmake")
 
+include(CheckCXXSymbolExists)
+check_cxx_symbol_exists(__GLIBCXX__ "cstddef" GCST_USING_LIBSTDCXX)
+
 function(gcst_message message)
     message("-- | (GCST) | ${message}")
 endfunction()
@@ -19,7 +22,7 @@ function(gcst_export_prepare target_name)
 
     foreach(obj IN LISTS ARGN)
         gcst_message("-- Adding source-object '${obj}' to target '${target_name}'")
-        target_sources(${target_name} PRIVATE $<TARGET_OBJECTS:${obj}>)
+        target_link_libraries(${target_name} PRIVATE ${obj})
     endforeach()
 
     string(FIND "${target_name}" "_" POS)
@@ -40,7 +43,7 @@ function(gcst_export_prepare target_name)
     set_target_properties("${target_name}" PROPERTIES EXPORT_NAME "${MODULE}")
     gcst_target_warnings("${target_name}")
     gcst_target_optimization("${target_name}")
-    if (MINGW)
+    if (MINGW AND GCST_USING_LIBSTDCXX)
         target_link_libraries("${target_name}" INTERFACE
             $<$<COMPILE_FEATURES:cxx_std_23>:stdc++exp>
         )
@@ -54,7 +57,7 @@ function(gcst_binary_prepare target_name)
     target_include_directories("${target_name}" PUBLIC "${GCST_INCLUDE_DIRS}")
     gcst_target_warnings("${target_name}")
     gcst_target_optimization("${target_name}")
-    if (MINGW)
+    if(WIN32 AND GCST_USING_LIBSTDCXX)
         target_link_libraries("${target_name}" PUBLIC
             $<$<COMPILE_FEATURES:cxx_std_23>:stdc++exp>
         )
